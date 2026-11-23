@@ -1,0 +1,23 @@
+name: SFS Next Phase 1
+on:
+  push:
+    branches: [feature/sfs-next]
+    paths:
+      - 'rom/filesys/SFSNext/**'
+      - '.github/workflows/sfs-next-phase1.yml'
+  pull_request:
+    paths:
+      - 'rom/filesys/SFSNext/**'
+      - '.github/workflows/sfs-next-phase1.yml'
+  workflow_dispatch:
+jobs:
+  geometry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run host-side tests
+        run: make -C rom/filesys/SFSNext/tests test
+      - name: Clean
+        run: make -C rom/filesys/SFSNext/tests clean
