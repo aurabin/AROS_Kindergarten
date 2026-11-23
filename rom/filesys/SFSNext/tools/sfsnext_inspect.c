@@ -30,6 +30,6 @@ int main(int argc, char **argv) {
     printf("root tree block: %" PRIu64 "\n", r.root_tree_block);
     printf("free space root: %" PRIu64 "\n", r.free_space_root);
     printf("journal blocks: %" PRIu64 "\n", r.journal_blocks);
-    puts("WARNING: checksum, file size and crash consistency not verified");
+    puts("WARNING: CRC64 checked; image size and crash consistency not verified");
     return 0;
 }
