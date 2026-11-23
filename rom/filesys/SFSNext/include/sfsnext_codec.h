@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "sfsnext_disk.h"
 #include "sfsnext_io.h"
+#include "sfsnext_checksum.h"
 static inline uint16_t sfsnext_be16(const uint8_t *p) {
     return (uint16_t)(((uint16_t)p[0] << 8) | p[1]);
 }
@@ -16,9 +17,7 @@ static inline uint32_t sfsnext_be32(const uint8_t *p) {
 static inline uint64_t sfsnext_be64(const uint8_t *p) {
     return ((uint64_t)sfsnext_be32(p) << 32) | sfsnext_be32(p + 4);
 }
-/* Unchecked checksum is deliberately rejected until checksum scheme is defined.
- * This function only validates structural fields and MUST NOT authorize mounting.
- */
+/* Validates draft header structure and CRC64. Not a mount authorization. */
 static inline bool sfsnext_parse_header_draft(const uint8_t *data, size_t len,
                                                 sfsnext_root_fields *out) {
     if (!data || !out || len < SFSNEXT_HEADER_BYTES ||
@@ -42,6 +41,7 @@ static inline bool sfsnext_parse_header_draft(const uint8_t *data, size_t len,
         r.free_space_root >= r.total_blocks ||
         (r.journal_blocks && !sfsnext_extent_bounds(
              r.journal_start, r.journal_blocks, r.total_blocks))) return false;
+    if (r.checksum != sfsnext_crc64_header(data)) return false;
     *out = r;
     return true;
 }
