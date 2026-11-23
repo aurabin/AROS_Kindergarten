@@ -36,11 +36,19 @@ static inline bool sfsnext_parse_header_draft(const uint8_t *data, size_t len,
     r.feature_flags = sfsnext_be32(data + 60);
     r.checksum = sfsnext_be64(data + 64);
     if (!sfsnext_valid_block_size(r.block_size) ||
-        r.total_blocks < 2 || r.feature_flags != 0 ||
+        r.total_blocks < 3 || r.feature_flags != 0 ||
+        r.root_tree_block == 0 || r.free_space_root == 0 ||
+        r.root_tree_block == r.free_space_root ||
         r.root_tree_block >= r.total_blocks ||
         r.free_space_root >= r.total_blocks ||
+        r.total_blocks > UINT64_MAX / r.block_size ||
         (r.journal_blocks && !sfsnext_extent_bounds(
              r.journal_start, r.journal_blocks, r.total_blocks))) return false;
+    if (r.journal_blocks &&
+        ((r.root_tree_block >= r.journal_start &&
+          r.root_tree_block - r.journal_start < r.journal_blocks) ||
+         (r.free_space_root >= r.journal_start &&
+          r.free_space_root - r.journal_start < r.journal_blocks))) return false;
     if (r.checksum != sfsnext_crc64_header(data)) return false;
     *out = r;
     return true;
