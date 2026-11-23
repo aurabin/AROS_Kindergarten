@@ -17,7 +17,7 @@ All integer fields are unsigned and **big endian**. The 80-byte proposed header 
 | 48 | 8 | journal length in blocks |
 | 56 | 4 | block size (512..32768, power of two) |
 | 60 | 4 | feature flags (must be zero in phase 1) |
-| 64 | 8 | checksum placeholder (NOT VERIFIED) |
+| 64 | 8 | CRC64-ECMA-182 of 80-byte header with bytes 64..71 zeroed |
 | 72 | 8 | reserved (must be zero) |
 
 ## Design decisions still required before writes
