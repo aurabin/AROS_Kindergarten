@@ -15,7 +15,7 @@ int main(void) {
     b[23]=16; /* total_blocks = 16 */
     b[31]=1; /* root_tree_block = 1 */
     b[39]=2; /* free_space_root = 2 */
-    b[57]=0x10; /* block_size = 4096 */
+    b[58]=0x10; /* block_size = 4096, big-endian at offset 56 */
     put_crc(b);
     assert(sfsnext_parse_header_draft(b, sizeof b, &root));
     assert(root.total_blocks==16 && root.block_size==4096);
