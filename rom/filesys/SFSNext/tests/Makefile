@@ -1,9 +1,12 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -O2 -Wall -Wextra -Werror -pedantic
 .PHONY: test clean
-test: test_geometry
+test: test_geometry test_codec
 	./test_geometry
+	./test_codec
 test_geometry: test_geometry.c ../include/sfsnext_io.h ../include/sfsnext_disk.h
 	$(CC) $(CFLAGS) -o $@ test_geometry.c
+test_codec: test_codec.c ../include/sfsnext_codec.h ../include/sfsnext_io.h ../include/sfsnext_disk.h
+	$(CC) $(CFLAGS) -o $@ test_codec.c
 clean:
-	rm -f test_geometry
+	rm -f test_geometry test_codec
